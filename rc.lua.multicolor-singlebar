@@ -489,8 +489,9 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "Return", function () awful.util.spawn(terminal .. " -e /home/jan/scripts/tmux_tasks") end),
     awful.key({ modkey,           }, "m",      function () awful.util.spawn(terminal .. " -e mc") end),
     awful.key({ modkey, "Shift"   }, "m",      function () awful.util.spawn("thunar") end),
-    --awful.key({ modkey,           }, "t",      function () awful.util.spawn("keepnote") end),
-    awful.key({ modkey, altkey    }, "t",      function () lain.widgets.task:show(7) end),
+    awful.key({ modkey,           }, "t",      lain.widgets.task.prompt_add),
+    awful.key({ modkey, "Shift"   }, "t",      lain.widgets.task.prompt),
+    awful.key({ modkey, altkey    }, "t",      lain.widgets.task.show),
     awful.key({ modkey,           }, "n",      function () awful.util.spawn("keepnote") end),
     awful.key({ modkey,           }, "Delete", function () awful.util.spawn("xscreensaver-command -lock") end),
 
