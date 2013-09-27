@@ -492,7 +492,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "t",      lain.widgets.task.prompt_add),
     awful.key({ modkey, "Shift"   }, "t",      lain.widgets.task.prompt),
     awful.key({ modkey, altkey    }, "t",      lain.widgets.task.show),
-    awful.key({ modkey,           }, "n",      function () awful.util.spawn("keepnote") end),
+    awful.key({ modkey, "Shift"   }, "n",      function () awful.util.spawn("keepnote") end),
     awful.key({ modkey,           }, "Delete", function () awful.util.spawn("xscreensaver-command -lock") end),
 
     awful.key({ modkey,           }, "q",      awesome.restart),
@@ -586,7 +586,7 @@ globalkeys = awful.util.table.join(
                   "/dev/null")
               end),
 
-    awful.key({ modkey, "Shift" }, "n",
+    awful.key({ modkey }, "n",
               function ()
                   awful.prompt.run({ prompt = "Write note: " },
                   mypromptbox[mouse.screen].widget,
@@ -688,6 +688,8 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "Hotot-qt" },
       properties = { floating = true, border_width = 0 } },
+    { rule = { class = "Yunio" },
+      properties = { floating = true, border_width = 0 } },
     { rule = { class = "Choqok" },
       properties = { floating = true, border_width = 0 } },
     { rule = { class = "Goldendict" },
@@ -697,7 +699,7 @@ awful.rules.rules = {
     { rule = { class = "gimp" },
       properties = { floating = true } },
     { rule = { class = "Keepnote" },
-      properties = { floating = false } },
+      properties = { floating = true } },
     { rule = { class = "Shutter" },
       properties = { floating = true } },
     { rule = { name = "CrossOver" },
@@ -750,6 +752,9 @@ end)
 client.connect_signal("focus",
     function(c)
         if c.maximized_horizontal == true and c.maximized_vertical == true then
+            c.border_width = 0
+            c.border_color = beautiful.border_normal
+        elseif c.class == 'MPlayer' then
             c.border_width = 0
             c.border_color = beautiful.border_normal
         else
@@ -805,7 +810,7 @@ end
 
 -- configuration - edit to your liking
 wp_index = 1
-wp_timeout  = 18000
+wp_timeout  = 9000
 wp_path = "/home/jan/Pictures/lovewallpaper/"
 wp_filter = function(s) return string.match(s,"%.png$") or string.match(s,"%.jpg$") end
 wp_files = scandir(wp_path, wp_filter)
