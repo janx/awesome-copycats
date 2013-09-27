@@ -368,6 +368,19 @@ function notes_completion(command, cur_pos, ncomp, shell)
   return str, cur_pos, output
 end
 
+function documents_completion(command, cur_pos, ncomp, shell)
+  prefix = "xdgopen /home/jan/Yunio/books/"
+  cmd = prefix .. command
+  cur_pos = cur_pos + prefix:len()
+
+  str, cur_pos, output = awful.completion.shell(cmd, cur_pos, ncomp, 'zsh')
+
+  str = str:gsub(prefix, '')
+  cur_pos = cur_pos - prefix:len()
+
+  return str, cur_pos, output
+end
+
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     -- Tag browsing
@@ -458,7 +471,6 @@ globalkeys = awful.util.table.join(
     -- Show/Hide Wibox
     awful.key({ modkey }, "b", function ()
         mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
-        mybottomwibox[mouse.screen].visible = not mybottomwibox[mouse.screen].visible
     end),
 
     -- Layout manipulation
@@ -597,6 +609,17 @@ globalkeys = awful.util.table.join(
                   awful.util.getdir("cache") .. "/history_notes")
               end),
 
+    awful.key({ modkey }, "o",
+              function ()
+                  awful.prompt.run({ prompt = "Open document: " },
+                  mypromptbox[mouse.screen].widget,
+                  function (...)
+                    awful.util.spawn("xdg-open /home/jan/Yunio/books/" .. ...)
+                  end,
+                  documents_completion,
+                  awful.util.getdir("cache") .. "/history_documents")
+              end),
+
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end)
 )
@@ -606,7 +629,7 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
     awful.key({ modkey,           }, "'",      awful.client.floating.toggle                     ),
     awful.key({ modkey, "Shift"   }, "'",      function (c) c:swap(awful.client.getmaster()) end),
-    awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        )
+    awful.key({ modkey, "Shift"   }, "o",      awful.client.movetoscreen                        )
 )
 
 -- Compute the maximum number of digit we need, limited to 9
