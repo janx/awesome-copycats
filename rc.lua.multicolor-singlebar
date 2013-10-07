@@ -200,29 +200,29 @@ memwidget = lain.widgets.mem({
 })
 
 -- MPD
---mpdicon = wibox.widget.imagebox()
---mpdwidget = lain.widgets.mpd({
-    --settings = function()
-        --mpd_notification_preset = {
-            --text = string.format("%s [%s] - %s\n%s", mpd_now.artist,
-                   --mpd_now.album, mpd_now.date, mpd_now.title)
-        --}
+mpdicon = wibox.widget.imagebox()
+mpdwidget = lain.widgets.mpd({
+    settings = function()
+        mpd_notification_preset = {
+            text = string.format("%s [%s] - %s\n%s", mpd_now.artist,
+                   mpd_now.album, mpd_now.date, mpd_now.title)
+        }
 
-        --if mpd_now.state == "play" then
-            --artist = mpd_now.artist .. " > "
-            --title  = mpd_now.title .. " "
-            --mpdicon:set_image(beautiful.widget_note_on)
-        --elseif mpd_now.state == "pause" then
-            --artist = "mpd "
-            --title  = "paused "
-        --else
-            --artist = ""
-            --title  = ""
-            --mpdicon:set_image(nil)
-        --end
-        --widget:set_markup(markup("#e54c62", artist) .. markup("#b2b2b2", title))
-    --end
---})
+        if mpd_now.state == "play" then
+            artist = mpd_now.artist .. " > "
+            title  = mpd_now.title .. " "
+            mpdicon:set_image(beautiful.widget_note_on)
+        elseif mpd_now.state == "pause" then
+            artist = "mpd "
+            title  = "paused "
+        else
+            artist = ""
+            title  = ""
+            mpdicon:set_image(nil)
+        end
+        widget:set_markup(markup("#e54c62", artist) .. markup("#b2b2b2", title))
+    end
+})
 
 -- Spacer
 spacer = wibox.widget.textbox(" ")
@@ -307,13 +307,11 @@ for s = 1, screen.count() do
     local left_layout = wibox.layout.fixed.horizontal()
     left_layout:add(mytaglist[s])
     left_layout:add(mylayoutbox[s])
+    if s == 1 then left_layout:add(wibox.widget.systray()) end
     left_layout:add(mypromptbox[s])
-    --left_layout:add(mpdicon)
-    --left_layout:add(mpdwidget)
 
     -- Widgets that are aligned to the upper right
     local right_layout = wibox.layout.fixed.horizontal()
-    if s == 1 then right_layout:add(wibox.widget.systray()) end
     --right_layout:add(mailicon)
     --right_layout:add(mailwidget)
     right_layout:add(netdownicon)
@@ -328,6 +326,8 @@ for s = 1, screen.count() do
     right_layout:add(cpuwidget)
     right_layout:add(fsicon)
     right_layout:add(fswidget)
+    right_layout:add(mpdicon)
+    right_layout:add(mpdwidget)
     right_layout:add(weathericon)
     right_layout:add(yawn.widget)
     --right_layout:add(tempicon)
@@ -517,6 +517,23 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, altkey    }, "c",      function () lain.widgets.calendar:show(7) end),
     awful.key({ modkey, altkey    }, "h",      function () fswidget.show(7) end),
     awful.key({ modkey, altkey    }, "w",      function () yawn.show(7) end),
+    awful.key({ modkey, altkey    }, "m",      function () awful.util.spawn(terminal .. " -e ncmpcpp") end),
+
+    -- mpd control
+    awful.key({}, "XF86AudioPlay",
+        function ()
+            awful.util.spawn("mpc toggle")
+        end),
+
+    awful.key({}, "XF86AudioPrev",
+        function ()
+            awful.util.spawn("mpc prev")
+        end),
+
+    awful.key({}, "XF86AudioNext",
+        function ()
+            awful.util.spawn("mpc next")
+        end),
 
     -- ALSA volume control
     awful.key({}, "XF86AudioRaiseVolume",
@@ -692,7 +709,7 @@ awful.rules.rules = {
                      keys = clientkeys,
                      buttons = clientbuttons } },
     { rule = { class = "Chromium", instance = "chromium" },
-      properties = { tag = tags[1][1], floating = false, maximized_vertical = false, maximized_horizontal = false } },
+      properties = { tag = tags[1][1], floating = true, maximized_vertical = false, maximized_horizontal = false } },
     { rule = { instance = "www.evernote.com__Home.action" },
       properties = { floating = true } },
     { rule = { instance = "plugin-container" },
