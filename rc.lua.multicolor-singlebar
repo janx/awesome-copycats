@@ -122,12 +122,12 @@ lain.widgets.calendar:attach(mytextclock, { font_size = 10 })
 taskwidget = lain.widgets.task:attach(clockicon, { font_size = 10 })
 
 -- Weather
-weathericon = wibox.widget.imagebox(beautiful.widget_weather)
-yawn = lain.widgets.yawn(2132574, {
-    settings = function()
-        widget:set_markup(markup("#eca4c4", forecast:lower() .. " @ " .. units .. "°C "))
-    end
-})
+--weathericon = wibox.widget.imagebox(beautiful.widget_weather)
+--yawn = lain.widgets.yawn(2132574, {
+    --settings = function()
+        --widget:set_markup(markup("#eca4c4", forecast:lower() .. " @ " .. units .. "°C "))
+    --end
+--})
 
 -- / fs
 fsicon = wibox.widget.imagebox(beautiful.widget_fs)
@@ -328,8 +328,8 @@ for s = 1, screen.count() do
     right_layout:add(fswidget)
     right_layout:add(mpdicon)
     right_layout:add(mpdwidget)
-    right_layout:add(weathericon)
-    right_layout:add(yawn.widget)
+    --right_layout:add(weathericon)
+    --right_layout:add(yawn.widget)
     --right_layout:add(tempicon)
     --right_layout:add(tempwidget)
     right_layout:add(baticon)
@@ -486,19 +486,19 @@ globalkeys = awful.util.table.join(
                 client.focus:raise()
             end
         end),
-    --awful.key({ altkey, "Shift"   }, "l",      function () awful.tag.incmwfact( 0.05)     end),
-    --awful.key({ altkey, "Shift"   }, "h",      function () awful.tag.incmwfact(-0.05)     end),
-    --awful.key({ modkey, "Shift"   }, "l",      function () awful.tag.incnmaster(-1)       end),
-    --awful.key({ modkey, "Shift"   }, "h",      function () awful.tag.incnmaster( 1)       end),
-    --awful.key({ modkey, "Control" }, "l",      function () awful.tag.incncol(-1)          end),
-    --awful.key({ modkey, "Control" }, "h",      function () awful.tag.incncol( 1)          end),
+    awful.key({ modkey,           }, "Up",     function () awful.tag.incmwfact( 0.05)     end),
+    awful.key({ modkey,           }, "Down",   function () awful.tag.incmwfact(-0.05)     end),
+    awful.key({ modkey,           }, "Left",   function () awful.tag.incnmaster( 1)       end),
+    awful.key({ modkey,           }, "Right",  function () awful.tag.incnmaster(-1)       end),
+    awful.key({ modkey, "Shift"   }, "Left",   function () awful.tag.incncol(-1)          end),
+    awful.key({ modkey, "Shift"   }, "Right",  function () awful.tag.incncol( 1)          end),
     awful.key({ modkey,           }, "space",  function () awful.layout.inc(layouts,  1)  end),
     awful.key({ modkey, "Shift"   }, "space",  function () awful.layout.set(awful.layout.suit.tile)  end),
     awful.key({ modkey,           }, "f",      function () awful.layout.set(awful.layout.suit.max)  end),
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
-    awful.key({ modkey, "Shift"   }, "Return", function () awful.util.spawn(terminal .. " -e /home/jan/scripts/tmux_tasks") end),
+    --awful.key({ modkey, "Shift"   }, "Return", function () awful.util.spawn(terminal .. " -e /home/jan/scripts/tmux_tasks") end),
     awful.key({ modkey,           }, "m",      function () awful.util.spawn(terminal .. " -e mc") end),
     awful.key({ modkey, "Shift"   }, "m",      function () awful.util.spawn("thunar") end),
     awful.key({ modkey,           }, "t",      lain.widgets.task.prompt_add),
@@ -511,7 +511,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "q",      awesome.quit),
 
     -- Dropdown terminal
-    awful.key({ modkey,	          }, "`",      function () drop(terminal) end),
+    awful.key({ modkey,	          }, "`",      function () drop(terminal .. " -e /home/jan/scripts/tmux_tasks", "top", "center", 1, 0.42, true) end),
 
     -- Widgets popups
     awful.key({ modkey, altkey    }, "c",      function () lain.widgets.calendar:show(7) end),
