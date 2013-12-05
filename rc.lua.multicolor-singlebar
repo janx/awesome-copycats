@@ -50,7 +50,7 @@ function run_once(cmd)
   awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
-run_once("urxvtd")
+--run_once("urxvtd")
 run_once("unclutter")
 -- }}}
 
@@ -64,25 +64,26 @@ beautiful.init(awful.util.getdir("config") .. "/themes/multicolor-singlebar/them
 -- common
 modkey     = "Mod4"
 altkey     = "Mod1"
-terminal   = "urxvtc" or "xfce4-terminal" --or "terminology"
+terminal   = "roxterm" or "xfce4-terminal"
 editor     = os.getenv("EDITOR") or "vim" or "nano"
 editor_cmd = terminal .. " -e " .. editor
 
 function edit_in_terminal(path)
-  return terminal .. " -e " .. editor .. " " .. path
+  working_dir = path:match("(.*/)")
+  return terminal .. " -d " .. working_dir .. " -e '" .. editor .. " " .. path .. "'"
 end
 
 local layouts = {
-    awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
     awful.layout.suit.tile.top,
-    awful.layout.suit.fair,
-    awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,
-    awful.layout.suit.spiral.dwindle,
-    awful.layout.suit.max,
-    awful.layout.suit.max.fullscreen,
+    awful.layout.suit.tile,
+    --awful.layout.suit.tile.left,
+    --awful.layout.suit.tile.bottom,
+    --awful.layout.suit.fair,
+    --awful.layout.suit.fair.horizontal,
+    --awful.layout.suit.spiral,
+    --awful.layout.suit.spiral.dwindle,
+    --awful.layout.suit.max,
+    --awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier,
     awful.layout.suit.floating
 }
@@ -356,7 +357,7 @@ root.buttons(awful.util.table.join(
 -- }}}
 
 function notes_completion(command, cur_pos, ncomp, shell)
-  prefix = "vim /home/jan/Yunio/notes/"
+  prefix = "vim /home/jan/Dropbox/notes/"
   cmd = prefix .. command
   cur_pos = cur_pos + prefix:len()
 
@@ -369,7 +370,7 @@ function notes_completion(command, cur_pos, ncomp, shell)
 end
 
 function documents_completion(command, cur_pos, ncomp, shell)
-  prefix = "xdgopen /home/jan/Yunio/books/"
+  prefix = "xdgopen /home/jan/Dropbox/books/"
   cmd = prefix .. command
   cur_pos = cur_pos + prefix:len()
 
@@ -499,16 +500,21 @@ globalkeys = awful.util.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
     --awful.key({ modkey, "Shift"   }, "Return", function () awful.util.spawn(terminal .. " -e /home/jan/scripts/tmux_tasks") end),
-    awful.key({ modkey,           }, "m",      function () awful.util.spawn(terminal .. " -e mc") end),
+    awful.key({ modkey,           }, "m",      function () awful.util.spawn(terminal .. " -e 'fish -c mc'") end),
     awful.key({ modkey, "Shift"   }, "m",      function () awful.util.spawn("thunar") end),
     awful.key({ modkey,           }, "t",      lain.widgets.task.prompt_add),
     awful.key({ modkey, "Shift"   }, "t",      lain.widgets.task.prompt),
     awful.key({ modkey, altkey    }, "t",      lain.widgets.task.show),
-    awful.key({ modkey, "Shift"   }, "n",      function () awful.util.spawn("keepnote") end),
     awful.key({ modkey,           }, "Delete", function () awful.util.spawn("xscreensaver-command -lock") end),
 
     awful.key({ modkey,           }, "q",      awesome.restart),
     awful.key({ modkey, "Shift"   }, "q",      awesome.quit),
+
+    awful.key({ modkey, "Shift"   }, "n",
+      function ()
+        file = "/home/jan/Dropbox/notes/worklog/" .. string.lower(os.date("%Y-%m-%d-%a"))
+        awful.util.spawn(edit_in_terminal(file))
+      end),
 
     -- Dropdown terminal
     awful.key({ modkey,	          }, "`",      function () drop(terminal .. " -e /home/jan/scripts/tmux_tasks", "top", "center", 1, 0.42, true) end),
@@ -555,6 +561,16 @@ globalkeys = awful.util.table.join(
         function ()
             awful.util.spawn("amixer -q set Master playback 100%")
             volumewidget.update()
+        end),
+
+    -- Brightness control
+    awful.key({}, "XF86MonBrightnessUp",
+        function ()
+            awful.util.spawn("sudo /home/jan/scripts/brightness.rb up")
+        end),
+    awful.key({}, "XF86MonBrightnessDown",
+        function ()
+            awful.util.spawn("sudo /home/jan/scripts/brightness.rb down")
         end),
 
     -- MPD control
@@ -620,7 +636,7 @@ globalkeys = awful.util.table.join(
                   awful.prompt.run({ prompt = "Write note: " },
                   mypromptbox[mouse.screen].widget,
                   function (...)
-                    awful.util.spawn(edit_in_terminal("/home/jan/Yunio/notes/" .. ...))
+                    awful.util.spawn(edit_in_terminal("/home/jan/Dropbox/notes/" .. ...))
                   end,
                   notes_completion,
                   awful.util.getdir("cache") .. "/history_notes")
@@ -631,7 +647,7 @@ globalkeys = awful.util.table.join(
                   awful.prompt.run({ prompt = "Open document: " },
                   mypromptbox[mouse.screen].widget,
                   function (...)
-                    awful.util.spawn("xdg-open /home/jan/Yunio/books/" .. ...)
+                    awful.util.spawn("xdg-open /home/jan/Dropbox/books/" .. ...)
                   end,
                   documents_completion,
                   awful.util.getdir("cache") .. "/history_documents")
@@ -714,6 +730,10 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { instance = "plugin-container" },
       properties = { floating = true } },
+    { rule = { class = "Hotot" },
+      properties = { floating = true } },
+    { rule = { class = "hotot-qt5" },
+      properties = { floating = true } },
     { rule = { class = "Steam" },
       properties = { floating = true } },
     { rule = { instance = "exe" },
@@ -750,8 +770,6 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "Pavumeter" },
       properties = { floating = true } },
-    { rule = { class = "Fqterm.bin" },
-      properties = { screen = 1, tag = tags[1][10], border_width = 0 } },
     { rule = { class = "Hipchat" },
       properties = { screen = screen.count(), tag = tags[screen.count()][2], border_width = 0 } },
     { rule = { class = "Pidgin" },
