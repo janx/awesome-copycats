@@ -16,8 +16,14 @@ local beautiful = require("beautiful")
 local naughty   = require("naughty")
 local drop      = require("scratchdrop")
 local lain      = require("lain")
-local menubar   = require("menubar")
 -- }}}
+
+menubar   = require("menubar")
+menubar.cache_entries = true
+menubar.show_categories = false
+
+table.insert(menubar.menu_gen.all_menu_dirs, 1, "/home/jan/.local/share/applications/")
+menubar.menu_gen.all_categories["WebApp"] = {app_type = "WebApp", name = "Web Application", icon_name = "applications-multimedia.png", use = true}
 
 -- {{{ Error handling
 if awesome.startup_errors then
