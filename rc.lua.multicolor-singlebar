@@ -392,7 +392,7 @@ end
 globalkeys = awful.util.table.join(
     -- Tag browsing
     awful.key({ modkey }, ",",   awful.tag.viewprev       ),
-    awful.key({ modkey }, ".",  awful.tag.viewnext       ),
+    awful.key({ modkey }, ".",   awful.tag.viewnext       ),
     awful.key({ modkey }, "Tab", awful.tag.history.restore),
 
     awful.key({ modkey, "Shift"   }, ".",
@@ -486,6 +486,14 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "w", function () awful.screen.focus(1) end),
     awful.key({ modkey,           }, "e", function () awful.screen.focus(screen.count()) end),
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
+
+    awful.key({ altkey,           }, "`",
+        function ()
+          awful.client.focus.byidx(1)
+          if client.focus then
+            client.focus:raise()
+          end
+        end),
     awful.key({ altkey,           }, "Tab",
         function ()
             awful.client.focus.history.previous()
@@ -493,6 +501,7 @@ globalkeys = awful.util.table.join(
                 client.focus:raise()
             end
         end),
+
     awful.key({ modkey,           }, "Up",     function () awful.tag.incmwfact( 0.05)     end),
     awful.key({ modkey,           }, "Down",   function () awful.tag.incmwfact(-0.05)     end),
     awful.key({ modkey,           }, "Left",   function () awful.tag.incnmaster( 1)       end),
@@ -505,7 +514,9 @@ globalkeys = awful.util.table.join(
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
+    awful.key({ modkey,	"Shift"   }, "Return", function () drop(terminal .. " -e /home/jan/scripts/tmux_tasks", "top", "center", 1, 0.42, true) end),
     --awful.key({ modkey, "Shift"   }, "Return", function () awful.util.spawn(terminal .. " -e /home/jan/scripts/tmux_tasks") end),
+
     awful.key({ modkey,           }, "m",      function () awful.util.spawn(terminal .. " -e 'fish -c mc'") end),
     awful.key({ modkey, "Shift"   }, "m",      function () awful.util.spawn("thunar") end),
     awful.key({ modkey,           }, "t",      lain.widgets.task.prompt_add),
@@ -521,9 +532,6 @@ globalkeys = awful.util.table.join(
         file = "/home/jan/Dropbox/notes/worklog/" .. string.lower(os.date("%Y-%m-%d-%a"))
         awful.util.spawn(edit_in_terminal(file))
       end),
-
-    -- Dropdown terminal
-    awful.key({ modkey,	          }, "`",      function () drop(terminal .. " -e /home/jan/scripts/tmux_tasks", "top", "center", 1, 0.42, true) end),
 
     -- Widgets popups
     awful.key({ modkey, altkey    }, "c",      function () lain.widgets.calendar:show(7) end),
